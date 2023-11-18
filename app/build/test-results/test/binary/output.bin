@@ -1,0 +1,7 @@
+Key matrix:
+[ 2,  8, 15]
+[ 7,  4, 17]
+[ 8, 13,  6]
+Original message=SAFEMESSAGE
+Padded message=SAFEMESSAGEX
+Cipher: HDSIOEYQOZHE

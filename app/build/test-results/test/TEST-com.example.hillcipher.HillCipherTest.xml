@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.hillcipher.HillCipherTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-11-18T09:00:22" hostname="codemachine" time="0.008">
+  <properties/>
+  <testcase name="test_encryption" classname="com.example.hillcipher.HillCipherTest" time="0.008"/>
+  <system-out><![CDATA[Key matrix:
+[ 2,  8, 15]
+[ 7,  4, 17]
+[ 8, 13,  6]
+Original message=SAFEMESSAGE
+Padded message=SAFEMESSAGEX
+Cipher: HDSIOEYQOZHE
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

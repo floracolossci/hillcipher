@@ -3,6 +3,11 @@
  */
 package com.example.hillcipher;
 
+import com.google.common.annotations.VisibleForTesting;
+
+import static com.example.hillcipher.Util.printMatrix;
+import static com.example.hillcipher.Util.resetMatrix;
+
 public class App {
     public String getGreeting() {
         return "Hello World!";
@@ -10,5 +15,120 @@ public class App {
 
     public static void main(String[] args) {
         System.out.println(new App().getGreeting());
+    }
+}
+
+
+/**
+ * A 3x3 key matrix implementation of Hill Cipher Algorithm.
+ */
+class HillCipher {
+    private static final char PAD_VALUE = 'X';
+
+    private final int[][] keyMatrix;
+    private HillCipher(final int[][] keyMatrix) {
+        this.keyMatrix = keyMatrix;
+    }
+
+    /**
+     * c = k * p * mod26
+     * @param message - The message to be encrypted
+     * @return - The encrypted cipher text.
+     */
+    public String encrypt(final String message) {
+        int n = 3; // Since, it's a 3x3 matrix mode
+
+        String paddedMessage = message;
+        if (message.length() % n != 0) { // Should pad
+            for (int i = 0; i < (n - (message.length() % n)); i++) {
+                paddedMessage += PAD_VALUE;
+            }
+        }
+
+        final char[] messageArr = paddedMessage.toCharArray();
+        int k = 0;
+        int[][] messageVector = new int[3][1];
+
+        System.out.printf("Original message=%s\n", message);
+        System.out.printf("Padded message=%s\n", paddedMessage);
+        k = 0;
+
+        String cipherText = "";
+
+        for (int i = 0; i < messageArr.length / n; i++) {
+            resetMatrix(messageVector);
+
+            for (int j = 0; j < n; j++) {
+                messageVector[j][0] = messageArr[k] % 65;
+                k++;
+            }
+
+            // process the messageVector c = (keyMatrix * messageVector) * mod26
+            int[][] c = new int[3][1];
+            multiply(keyMatrix, messageVector, c);
+            modulo(c, 26);
+
+            for (int[] chatInts : c) {
+                cipherText += (char) (chatInts[0] + 65);
+            }
+        }
+        System.out.printf("Cipher: %s\n", cipherText);
+        return cipherText;
+    }
+
+    public String decrypt() {
+        return "";
+    }
+
+    private void multiply(int[][] a, int[][] b, int[][] out) {
+        if (b.length != a.length) {
+            throw new RuntimeException("Unable to perform multiplication");
+        }
+
+        int i, j, k;
+        // Multiply the two matrices
+        int row1 = a.length, col2 = b[0].length, row2 = b.length;
+        for (i = 0; i < row1; i++) {
+            for (j = 0; j < col2; j++) {
+                for (k = 0; k < row2; k++)
+                    out[i][j] += a[i][k] * b[k][j];
+            }
+        }
+    }
+
+    private void modulo(int[][] in, int mod) {
+        for (int i = 0; i < in.length; i++) {
+            for (int j = 0; j < in[0].length; j++) {
+                in[i][j] = in[i][j] % mod;
+            }
+        }
+    }
+
+    public static class Factory {
+        HillCipher create(String key) throws IllegalArgumentException {
+            if (key.toUpperCase().length() % 3 != 0) {
+                throw new IllegalArgumentException("Invalid key length");
+            }
+            if (!key.toUpperCase().matches("^[A-Z]*$")) {
+                throw new IllegalArgumentException("Key only contains alphabets");
+            }
+
+            final int[][] keyMatrix = new int[3][3];
+            getKeyMatrix(key, keyMatrix);
+            System.out.println("Key matrix:");
+            printMatrix(keyMatrix);
+            return new HillCipher(keyMatrix);
+        }
+
+        @VisibleForTesting
+        public static void getKeyMatrix(String key, int[][] outKeyMatrix) {
+            int k = 0;
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    outKeyMatrix[i][j] = (key.charAt(k)) % 65;
+                    k++;
+                }
+            }
+        }
     }
 }
