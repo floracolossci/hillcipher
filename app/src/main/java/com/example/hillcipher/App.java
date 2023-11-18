@@ -9,12 +9,70 @@ import static com.example.hillcipher.Util.printMatrix;
 import static com.example.hillcipher.Util.resetMatrix;
 
 public class App {
+    private static final int[][] keyMatrix = new int[][]{{1, 2, 1}, {2, 3, 2}, {2, 2, 1}};
+    private static final int[][] keyMatrixInverse = new int[][]{{-1, 0, 1}, {2, -1, 0}, {-2, 2, -1}};
+
+    private static final int[][] keyMatrix2 = new int[][]{{2, 8, 15}, {7, 4, 17}, {8, 13, 6}};
+    private static final int[][] keyMatrix2Inverse = new int[][]{{3, 7, 16}, {2, 6, 17}, {9, 8, 20}};
+
+    private static final int[][] keyMatrix3 = new int[][]{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
+    private static final int[][] keyMatrix3Inverse = new int[][]{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
+
     public String getGreeting() {
         return "Hello World!";
     }
 
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+        final App app = new App();
+        app.hillCipher("WEKILLTONIGHT");
+    }
+
+    public void hillCipher(final String message) {
+        int n = 3;
+        String paddedMessage = message;
+        if (message.length() % n != 0) { // Should pad
+            for (int i = 0; i < (n - (message.length() % n)); i++) {
+                paddedMessage += 'X';
+            }
+        }
+
+        String cipher = "";
+        for (int i = 0; i < message.length(); i += 3) {
+            cipher += hash(keyMatrix3,
+                    paddedMessage.charAt(i),
+                    paddedMessage.charAt(i + 1),
+                    paddedMessage.charAt(i + 2));
+        }
+        System.out.println("Hill Cipher demonstration");
+        System.out.printf("Original message     : %s\n", message);
+        System.out.printf("Padded message       : %s\n", paddedMessage);
+        System.out.printf("Encrypted            : %s\n", cipher);
+
+        String decrypted = "";
+        for (int i = 0; i < cipher.length(); i += 3) {
+            decrypted += hash(
+                    keyMatrix3Inverse,
+                    cipher.charAt(i),
+                    cipher.charAt(i + 1),
+                    cipher.charAt(i + 2));
+        }
+        System.out.printf("Decrypted            : %s\n", decrypted);
+    }
+
+    private String hash(int[][] key, char a, char b, char c) {
+        String ret = "";
+        int hashedA = (int) a % 65;
+        int hashedB = (int) b % 65;
+        int hashedC = (int) c % 65;
+
+        int x = (hashedA * key[0][0] + hashedB * key[0][1] + hashedC * key[0][2]) % 26;
+        int y = (hashedA * key[1][0] + hashedB * key[1][1] + hashedC * key[1][2]) % 26;
+        int z = (hashedA * key[2][0] + hashedB * key[2][1] + hashedC * key[2][2]) % 26;
+
+        ret += (char) (x + 65);
+        ret += (char) (y + 65);
+        ret += (char) (z + 65);
+        return ret;
     }
 }
 
@@ -46,15 +104,13 @@ class HillCipher {
         }
 
         final char[] messageArr = paddedMessage.toCharArray();
-        int k = 0;
         int[][] messageVector = new int[3][1];
 
         System.out.printf("Original message=%s\n", message);
         System.out.printf("Padded message=%s\n", paddedMessage);
-        k = 0;
 
         String cipherText = "";
-
+        int k = 0;
         for (int i = 0; i < messageArr.length / n; i++) {
             resetMatrix(messageVector);
 
@@ -65,7 +121,7 @@ class HillCipher {
 
             // process the messageVector c = (keyMatrix * messageVector) * mod26
             int[][] c = new int[3][1];
-            multiply(keyMatrix, messageVector, c);
+            multiply(keyMatrix, messageVector, /* out= */ c);
             modulo(c, 26);
 
             for (int[] chatInts : c) {
@@ -77,7 +133,7 @@ class HillCipher {
     }
 
     public String decrypt() {
-        return "";
+        throw new UnsupportedOperationException("Unable to decrypt");
     }
 
     private void multiply(int[][] a, int[][] b, int[][] out) {
@@ -120,6 +176,10 @@ class HillCipher {
             return new HillCipher(keyMatrix);
         }
 
+        HillCipher create(int[][] keyMatrix) {
+            return new HillCipher(keyMatrix);
+        }
+
         @VisibleForTesting
         public static void getKeyMatrix(String key, int[][] outKeyMatrix) {
             int k = 0;
@@ -129,6 +189,17 @@ class HillCipher {
                     k++;
                 }
             }
+        }
+
+        @VisibleForTesting
+        public static String getKeyFromMatrix(int[][] outKeyMatrix) {
+            String key = "";
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    key += (char) (outKeyMatrix[i][j] + 65);
+                }
+            }
+            return key;
         }
     }
 }

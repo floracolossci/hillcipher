@@ -61,4 +61,15 @@ public class HillCipherTest {
 
         assertEquals("HDSIOEYQOZHE", cipherText);
     }
+
+    @Test
+    public void test_encryptionAndDecription2() {
+        final String message = "PTRCET-YASAR";
+        final int[][] keyMatrix = new int[][]{{1, 2, 1}, {2, 3, 2}, {2, 2, 1}};
+
+        final HillCipher algorithm = new HillCipher.Factory().create(keyMatrix);
+        final String cipherText = algorithm.encrypt(message);
+
+        assertEquals("HDSIOEYQOZHE", cipherText);
+    }
 }
