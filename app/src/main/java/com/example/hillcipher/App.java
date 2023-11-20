@@ -16,7 +16,7 @@ public class App {
     private static final int[][] keyMatrix2Inverse = new int[][]{{3, 7, 16}, {2, 6, 17}, {9, 8, 20}};
 
     private static final int[][] keyMatrix3 = new int[][]{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
-    private static final int[][] keyMatrix3Inverse = new int[][]{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
+    private static final int[][] keyMatrix3Inverse = new int[][]{{0, 0, 1}, {0, 1, 0}, {1, 0, 0}};
 
     public String getGreeting() {
         return "Hello World!";
@@ -38,7 +38,7 @@ public class App {
 
         String cipher = "";
         for (int i = 0; i < message.length(); i += 3) {
-            cipher += hash(keyMatrix3,
+            cipher += hash(keyMatrix2,
                     paddedMessage.charAt(i),
                     paddedMessage.charAt(i + 1),
                     paddedMessage.charAt(i + 2));
@@ -51,7 +51,7 @@ public class App {
         String decrypted = "";
         for (int i = 0; i < cipher.length(); i += 3) {
             decrypted += hash(
-                    keyMatrix3Inverse,
+                    keyMatrix2Inverse,
                     cipher.charAt(i),
                     cipher.charAt(i + 1),
                     cipher.charAt(i + 2));

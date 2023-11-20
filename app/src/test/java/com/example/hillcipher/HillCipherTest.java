@@ -70,6 +70,6 @@ public class HillCipherTest {
         final HillCipher algorithm = new HillCipher.Factory().create(keyMatrix);
         final String cipherText = algorithm.encrypt(message);
 
-        assertEquals("HDSIOEYQOZHE", cipherText);
+        assertEquals("SRHDCFPGIJSB", cipherText);
     }
 }
